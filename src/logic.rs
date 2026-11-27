@@ -40,18 +40,18 @@ pub fn get_move(_game: &Game, turn: &i32, _board: &Board, you: &Battlesnake) -> 
     let snake_count: i32 = snakes.len();
     let head: Coord = &you.body[0];
     let neck: Coord = &you.body[1];
-    moves_safe |= (head.x != 0) & (head.x <= neck.x) as u8;
-    moves_safe |= ((head.x != width - 1) & (head.x >= neck.x)) as u8 << 1u8;
-    moves_safe |= ((head.y != 0) & (head.y <= neck.y)) as u8 << 2u8;
-    moves_safe |= ((head.y != height - 1) & (head.y >= neck.y)) as u8 << 3u8;
+    moves_safe |= ((head.x != 0) && (head.x <= neck.x)) as u8;
+    moves_safe |= ((head.x != width - 1) && (head.x >= neck.x)) as u8 << 1u8;
+    moves_safe |= ((head.y != 0) && (head.y <= neck.y)) as u8 << 2u8;
+    moves_safe |= ((head.y != height - 1) && (head.y >= neck.y)) as u8 << 3u8;
     for i in 0..snake_count {
         let body = snakes[i];
         let body_length = body.len();
         for j in 0..body_length {
-            hazards |= (head.y == body[j].y) & (head.x == body[j].x + 1) as u8;
-            hazards |= ((head.y == body[j].y) & (head.x == body[j].x - 1)) as u8 << 1u8;
-            hazards |= ((head.x == body[j].x) & (head.y == body[j].y + 1)) as u8 << 2u8;
-            hazards |= ((head.x == body[j].x) & (head.y == body[j].y - 1)) as u8 << 3u8;
+            hazards |= ((head.y == body[j].y) && (head.x == body[j].x + 1)) as u8;
+            hazards |= ((head.y == body[j].y) && (head.x == body[j].x - 1)) as u8 << 1u8;
+            hazards |= ((head.x == body[j].x) && (head.y == body[j].y + 1)) as u8 << 2u8;
+            hazards |= ((head.x == body[j].x) && (head.y == body[j].y - 1)) as u8 << 3u8;
         }
     }
     moves_safe &= ~hazards;
