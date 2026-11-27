@@ -52,7 +52,7 @@ pub struct Coord {
 #[derive(Deserialize, Serialize, Debug)]
 pub struct GameState {
     game: Game,
-    turn: i32,
+    turn: u32,
     board: Board,
     you: Battlesnake,
 }
