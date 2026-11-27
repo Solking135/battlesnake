@@ -45,7 +45,7 @@ pub fn get_move(_game: &Game, turn: &u32, _board: &Board, you: &Battlesnake) -> 
     moves_safe |= ((head.y != 0) && (head.y <= neck.y)) as u8 << 2u8;
     moves_safe |= ((head.y != height - 1) && (head.y >= neck.y)) as u8 << 3u8;
     for i in 0..snake_count {
-        let body = &snakes[i];
+        let body = &snakes.body[i];
         let body_length = body.len();
         for j in 0..body_length {
             hazards |= ((head.y == body[j].y) && (head.x == body[j].x + 1)) as u8;
