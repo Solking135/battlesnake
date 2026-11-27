@@ -1,7 +1,6 @@
 use log::info;
-use rand::seq::IndexedRandom;
+use rand::Rng;
 use serde_json::{json, Value};
-use std::collections::HashMap;
 
 use crate::{Battlesnake, Board, Game};
 
