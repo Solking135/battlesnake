@@ -5,24 +5,20 @@ use log::info;
 use rocket::fairing::AdHoc;
 use rocket::http::Status;
 use rocket::serde::{json::Json, Deserialize};
-use serde::Serialize;
 use serde_json::Value;
 use std::collections::HashMap;
 use std::env;
 
 mod logic;
 
-// API and Response Objects
-// See https://docs.battlesnake.com/api
-
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct Game {
     id: String,
     ruleset: HashMap<String, Value>,
     timeout: u32,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct Board {
     height: i32,
     width: i32,
@@ -31,7 +27,7 @@ pub struct Board {
     hazards: Vec<Coord>,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct Battlesnake {
     id: String,
     name: String,
@@ -43,13 +39,13 @@ pub struct Battlesnake {
     shout: Option<String>,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct Coord {
     x: i32,
     y: i32,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct GameState {
     game: Game,
     turn: u32,
@@ -76,14 +72,12 @@ fn handle_start(start_req: Json<GameState>) -> Status {
 
 #[post("/move", format = "json", data = "<move_req>")]
 fn handle_move(move_req: Json<GameState>) -> Json<Value> {
-    let response = logic::get_move(
+    Json(logic::get_move(
         &move_req.game,
         &move_req.turn,
         &move_req.board,
         &move_req.you,
-    );
-
-    Json(response)
+    ))
 }
 
 #[post("/end", format = "json", data = "<end_req>")]
@@ -95,15 +89,10 @@ fn handle_end(end_req: Json<GameState>) -> Status {
 
 #[launch]
 fn rocket() -> _ {
-    // Lots of web hosting services expect you to bind to the port specified by the `PORT`
-    // environment variable. However, Rocket looks at the `ROCKET_PORT` environment variable.
-    // If we find a value for `PORT`, we set `ROCKET_PORT` to that value.
     if let Ok(port) = env::var("PORT") {
         env::set_var("ROCKET_PORT", &port);
     }
 
-    // We default to 'info' level logging. But if the `RUST_LOG` environment variable is set,
-    // we keep that value instead.
     if env::var("RUST_LOG").is_err() {
         env::set_var("RUST_LOG", "info");
     }
