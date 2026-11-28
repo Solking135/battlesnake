@@ -65,6 +65,16 @@ pub fn get_move(_game: &Game, turn: &u32, _board: &Board, you: &Battlesnake) -> 
         direction_best = (i & mask) | (direction_best & !mask);
     }
     let chosen: &str = DIRECTIONS[direction_best];
+    info!(
+    "TURN {} HEAD=({}, {}) WIDTH={} HEIGHT={} POS={} CHOSEN={}",
+    turn,
+    you.head.x,
+    you.head.y,
+    _board.width,
+    _board.height,
+    pos,
+    chosen
+);
     info!("MOVE {}: {}", turn, chosen);
     json!({ "move": chosen })
 }
