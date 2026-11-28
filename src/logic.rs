@@ -48,33 +48,23 @@ pub fn get_move(_game: &Game, turn: &u32, _board: &Board, you: &Battlesnake) -> 
     let food = &_board.food;
     for i in 0..4 {
         let next: usize = (pos as isize + MOVES[i]) as usize;
-        let mobility: i32 = (hazards[next - 1] == 0) as i32 + (hazards[next + 1] == 0) as i32 + (hazards[next - Y_OFFSET] == 0) as i32 + (hazards[next + Y_OFFSET] == 0) as i32;
-        let mut food_dist: i32 = i32::MAX;
-
-        let x: i32 = (next % Y_OFFSET) as i32 - 1;
-        let y: i32 = (next / Y_OFFSET) as i32 - 1;
-        for f in food {
-            let dist = (x - f.x).abs() + (y - f.y).abs();
-            food_dist = food_dist.min(dist);
+        if hazards[next] == 0 {
+            let mobility: i32 = (hazards[next - 1] == 0) as i32 + (hazards[next + 1] == 0) as i32 + (hazards[next - Y_OFFSET] == 0) as i32 + (hazards[next + Y_OFFSET] == 0) as i32;
+            let mut food_dist: i32 = i32::MAX;
+            let x: i32 = (next % Y_OFFSET) as i32 - 1;
+            let y: i32 = (next / Y_OFFSET) as i32 - 1;
+            for f in food {
+                let dist = (x - f.x).abs() + (y - f.y).abs();
+                food_dist = food_dist.min(dist);
+            }
+            food_dist *= (food_dist != i32::MAX) as i32;
+            let score: i32 = mobility * 3 - (food_dist << 1);
+            let mask: usize = 0usize.wrapping_sub((score > score_best) as usize);
+            score_best = (score & mask as i32) | (score_best & !mask as i32);
+            direction_best = (i & mask) | (direction_best & !mask);
         }
-        food_dist *= (food_dist != i32::MAX) as i32;
-        let mask: i32 = 0u32.wrapping_sub((hazards[next] == 0) as u32) as i32;
-        let score: i32 = ((mobility * 3 - (food_dist << 1)) & mask) | (i32::MIN & !mask);
-        let mask: usize = 0usize.wrapping_sub((score > score_best) as usize);
-        score_best = (score & mask as i32) | (score_best & !mask as i32);
-        direction_best = (i & mask) | (direction_best & !mask);
     }
     let chosen: &str = DIRECTIONS[direction_best];
-    info!(
-    "TURN {} HEAD=({}, {}) WIDTH={} HEIGHT={} POS={} CHOSEN={}",
-    turn,
-    you.head.x,
-    you.head.y,
-    _board.width,
-    _board.height,
-    pos,
-    chosen
-);
     info!("MOVE {}: {}", turn, chosen);
     json!({ "move": chosen })
 }
