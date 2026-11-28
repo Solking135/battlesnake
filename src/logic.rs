@@ -9,8 +9,8 @@ pub fn info() -> Value {
         "apiversion": "1",
         "author": "Solking135",
         "color": "#7f00ff",
-        "head": "evil",
-        "tail": "hook",
+        "head": "beluga",
+        "tail": "bolt",
     })
 }
 
