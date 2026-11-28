@@ -24,7 +24,7 @@ pub fn end(_game: &Game, _turn: &u32, _board: &Board, _you: &Battlesnake) {
 
 const Y_OFFSET: usize = 21;
 const BOARD_SIZE: usize = Y_OFFSET * Y_OFFSET;
-const MOVES: [isize; 4] = [-1, 1, -Y_OFFSET, Y_OFFSET];
+const MOVES: [isize; 4] = [-1, 1, -21, 21];
 const DIRECTIONS: [&str; 4] = ["left", "right", "down", "up"];
 pub fn get_move(_game: &Game, turn: &u32, _board: &Board, you: &Battlesnake) -> Value {
     let mut hazards = [1u8; BOARD_SIZE];
