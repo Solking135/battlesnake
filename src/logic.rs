@@ -61,7 +61,7 @@ pub fn get_move(_game: &Game, turn: &u32, _board: &Board, you: &Battlesnake) -> 
         let mask: i32 = 0u32.wrapping_sub((hazards[next] == 0) as u32) as i32;
         let score: i32 = ((mobility * 3 - (food_dist << 1)) & mask) | (i32::MIN & !mask);
         let mask: usize = 0usize.wrapping_sub((score > score_best) as usize);
-        score_best = (score & mask) | (score_best & !mask);
+        score_best = (score & mask as i32) | (score_best & !mask as i32);
         direction_best = (i & mask) | (direction_best & !mask);
     }
     let chosen: &str = DIRECTIONS[direction_best];
