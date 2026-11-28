@@ -42,7 +42,7 @@ pub fn get_move(_game: &Game, turn: &u32, _board: &Board, you: &Battlesnake) -> 
             hazards[(body[j].x as usize + 1) + (body[j].y as usize + 1) * Y_OFFSET] = 1;
         }
     }
-    let pos: usize = (&you.head.x + 1 + (&you.head.y + 1) * Y_OFFSET as i32) as usize;
+    let pos: usize = (you.head.x + 1 + (you.head.y + 1) * Y_OFFSET as i32) as usize;
     let mut score_best: i32 = i32::MIN;
     let mut direction_best: usize = 0;
     let food = &_board.food;
