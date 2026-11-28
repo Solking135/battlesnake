@@ -36,7 +36,7 @@ pub fn get_move(_game: &Game, turn: &u32, _board: &Board, you: &Battlesnake) -> 
     let snakes: &Vec<Battlesnake> = &_board.snakes;
     let snake_count: usize = snakes.len();
     for i in 0..snake_count {
-        let body: &Vec<Coord> = &snakes[i].body;
+        let body = &snakes[i].body;
         let body_length: usize = body.len();
         for j in 0..body_length {
             hazards[(body[j].x as usize + 1) + (body[j].y as usize + 1) * Y_OFFSET] = 1;
@@ -45,7 +45,7 @@ pub fn get_move(_game: &Game, turn: &u32, _board: &Board, you: &Battlesnake) -> 
     let pos: usize = (&you.head.x + 1 + (&you.head.y + 1) * Y_OFFSET as i32) as usize;
     let mut score_best: i32 = i32::MIN;
     let mut direction_best: usize = 0;
-    let food: &Vec<Coord> = &_board.food;
+    let food = &_board.food;
     for i in 0..4 {
         let next: usize = (pos as isize + MOVES[i]) as usize;
         let mobility: i32 = (hazards[next - 1] == 0) as i32 + (hazards[next + 1] == 0) as i32 + (hazards[next - Y_OFFSET] == 0) as i32 + (hazards[next + Y_OFFSET] == 0) as i32;
