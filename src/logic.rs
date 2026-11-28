@@ -27,8 +27,6 @@ const BOARD_SIZE: usize = 21 * 21;
 const MOVES: [isize; 4] = [-1, 1, -21, 21];
 const DIRECTIONS: [&str; 4] = ["left", "right", "down", "up"];
 pub fn get_move(_game: &Game, turn: &u32, _board: &Board, you: &Battlesnake) -> Value {
-    let height: i32 = _board.height;
-    let width: i32 = _board.width;
     let mut hazards = [1u8; BOARD_SIZE];
     for y in 1..20 {
         for x in 1..20 {
@@ -47,11 +45,12 @@ pub fn get_move(_game: &Game, turn: &u32, _board: &Board, you: &Battlesnake) -> 
     let pos: usize = (&you.head.x + 1 + (&you.head.y + 1) * Y_OFFSET as i32) as usize;
     let mut score_best: i32 = i32::MIN;
     let mut direction_best: usize = 0;
+    let food: &Vec<Coord> = &_board.food;
     for i in 0..4 {
         let next: usize = (pos as isize + MOVES[i]) as usize;
         let mobility: i32 = (hazards[next - 1] == 0) as i32 + (hazards[next + 1] == 0) as i32 + (hazards[next - Y_OFFSET] == 0) as i32 + (hazards[next + Y_OFFSET] == 0) as i32;
         let mut food_dist: i32 = i32::MAX;
-        let food: &Vec<Coord> = &_board.food;
+
         let x: i32 = (next % Y_OFFSET) as i32 - 1;
         let y: i32 = (next / Y_OFFSET) as i32 - 1;
         for f in food {
