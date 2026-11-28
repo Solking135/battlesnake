@@ -22,28 +22,50 @@ pub fn end(_game: &Game, _turn: &u32, _board: &Board, _you: &Battlesnake) {
     info!("GAME OVER");
 }
 
-const OFFSET: usize = 19;
+const Y_OFFSET: usize = 21;
+const BOARD_SIZE: usize = 21 * 21;
+const MOVES: [isize; 4] = [-1, 1, -21, 21];
+const DIRECTIONS: [&str; 4] = ["left", "right", "down", "up"];
 pub fn get_move(_game: &Game, turn: &u32, _board: &Board, you: &Battlesnake) -> Value {
     let height: i32 = _board.height;
     let width: i32 = _board.width;
-    let mut hazards = [0u8; 361];
+    let mut hazards = [1u8; BOARD_SIZE];
+    for y in 1..20 {
+        for x in 1..20 {
+            hazards[x + y * Y_OFFSET] = 0;
+        }
+    }
     let snakes: &Vec<Battlesnake> = &_board.snakes;
     let snake_count: usize = snakes.len();
-    let head: &Coord = &you.body[0];
-    let neck: &Coord = &you.body[1];
-    let food: &Vec<Coord> = &_board.food;
     for i in 0..snake_count {
         let body: &Vec<Coord> = &snakes[i].body;
         let body_length: usize = body.len();
         for j in 0..body_length {
-            hazards[(body[j].x as usize) + (body[j].y as usize) * OFFSET] = 1;
+            hazards[(body[j].x as usize + 1) + (body[j].y as usize + 1) * Y_OFFSET] = 1;
         }
     }
-    let pos: usize = (head.x as usize) + (head.y as usize) * OFFSET;
-    moves_safe |= ((head.x > 0) && (hazards[pos - 1] == 0)) as u8;
-    moves_safe |= (((head.x < width - 1) && (hazards[pos + 1] == 0)) as u8) << 1u8;
-    moves_safe |= (((head.y > 0) && (hazards[pos - OFFSET] == 0)) as u8) << 2u8;
-    moves_safe |= (((head.y < height - 1) && (hazards[pos + OFFSET] == 0)) as u8) << 3u8;
+    let pos: usize = (&you.head.x + 1 + (&you.head.y + 1) * Y_OFFSET as i32) as usize;
+    let mut score_best: i32 = i32::MIN;
+    let mut direction_best: usize = 0;
+    for i in 0..4 {
+        let next: usize = (pos as isize + MOVES[i]) as usize;
+        let mobility: i32 = (hazards[next - 1] == 0) as i32 + (hazards[next + 1] == 0) as i32 + (hazards[next - Y_OFFSET] == 0) as i32 + (hazards[next + Y_OFFSET] == 0) as i32;
+        let mut food_dist: i32 = i32::MAX;
+        let food: &Vec<Coord> = &_board.food;
+        let x: i32 = (next % Y_OFFSET) as i32 - 1;
+        let y: i32 = (next / Y_OFFSET) as i32 - 1;
+        for f in food {
+            let dist = (x - f.x).abs() + (y - f.y).abs();
+            food_dist = food_dist.min(dist);
+        }
+        food_dist *= (food_dist != i32::MAX) as i32;
+        let mask: i32 = 0u32.wrapping_sub((hazards[next] == 0) as u32) as i32;
+        let score: i32 = ((mobility * 3 - (food_dist << 1)) & mask) | (i32::MIN & !mask);
+        let mask: usize = 0usize.wrapping_sub((score > score_best) as usize);
+        score_best = (score & mask) | (score_best & !mask);
+        direction_best = (i & mask) | (direction_best & !mask);
+    }
+    let chosen: &str = DIRECTIONS[direction_best];
     info!("MOVE {}: {}", turn, chosen);
     json!({ "move": chosen })
 }
